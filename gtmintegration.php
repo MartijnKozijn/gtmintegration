@@ -3,106 +3,112 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-class GtmIntegration extends Module
+class Gtmintegration extends Module
 {
     public function __construct()
     {
         $this->name = 'gtmintegration';
         $this->tab = 'analytics_stats';
         $this->version = '1.0.0';
-        $this->author = 'Jaymian-Lee Reinartz';
+        $this->author = 'Your Name';
         $this->need_instance = 0;
-        $this->bootstrap = true;
 
         parent::__construct();
 
-        $this->displayName = $this->l('GTM Integration');
-        $this->description = $this->l('Eenvoudige integratie van Google Tag Manager.');
+        $this->displayName = $this->l('Google Tag Manager Integration');
+        $this->description = $this->l('Inserts Google Tag Manager code into the header and body of your site.');
 
-        $this->ps_versions_compliancy = array('min' => '8.0', 'max' => _PS_VERSION_);
+        $this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_);
     }
 
     public function install()
     {
-        return parent::install() && 
-               $this->registerHook('displayHeader') && 
-               $this->registerHook('displayFooter') && 
-               Configuration::updateValue('GTM_HEAD_CODE', '') &&
-               Configuration::updateValue('GTM_BODY_CODE', '');
+        return parent::install() && $this->registerHook('header') && $this->registerHook('displayAfterBodyOpeningTag');
     }
 
     public function uninstall()
     {
-        return parent::uninstall() && 
-               Configuration::deleteByName('GTM_HEAD_CODE') &&
-               Configuration::deleteByName('GTM_BODY_CODE');
+        return parent::uninstall();
     }
 
     public function getContent()
     {
         $output = '';
-        if (Tools::isSubmit('submitGtmIntegration')) {
+        if (Tools::isSubmit('submit'.$this->name)) {
             $gtm_head_code = Tools::getValue('GTM_HEAD_CODE');
             $gtm_body_code = Tools::getValue('GTM_BODY_CODE');
-
             Configuration::updateValue('GTM_HEAD_CODE', $gtm_head_code);
             Configuration::updateValue('GTM_BODY_CODE', $gtm_body_code);
-
-            $output .= $this->displayConfirmation($this->l('Instellingen bijgewerkt.'));
+            $output .= $this->displayConfirmation($this->l('Settings updated'));
         }
 
-        return $output . $this->renderForm();
+        return $output.$this->renderForm();
     }
 
-    protected function renderForm()
+    public function renderForm()
     {
         $fields_form = array(
             'form' => array(
                 'legend' => array(
-                    'title' => $this->l('GTM Settings'),
+                    'title' => $this->l('Settings'),
                 ),
                 'input' => array(
                     array(
                         'type' => 'textarea',
                         'label' => $this->l('GTM Head Code'),
                         'name' => 'GTM_HEAD_CODE',
-                        'cols' => 60,
-                        'rows' => 5,
-                        'required' => true,
+                        'rows' => 7,
+                        'cols' => 40,
+                        'value' => Configuration::get('GTM_HEAD_CODE'),
                     ),
                     array(
                         'type' => 'textarea',
                         'label' => $this->l('GTM Body Code'),
                         'name' => 'GTM_BODY_CODE',
-                        'cols' => 60,
-                        'rows' => 5,
-                        'required' => true,
+                        'rows' => 7,
+                        'cols' => 40,
+                        'value' => Configuration::get('GTM_BODY_CODE'),
                     ),
                 ),
                 'submit' => array(
                     'title' => $this->l('Save'),
-                    'class' => 'btn btn-default pull-right',
                 ),
             ),
         );
 
         $helper = new HelperForm();
-        $helper->submit_action = 'submitGtmIntegration';
+        $helper->show_toolbar = false;
+        $helper->table = $this->table;
+        $helper->module = $this;
+        $helper->default_form_language = (int)Configuration::get('PS_LANG_DEFAULT');
+        $helper->allow_employee_form_lang = (int)Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG');
+        $helper->identifier = $this->identifier;
+        $helper->submit_action = 'submit'.$this->name;
+        $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false)
+            .'&configure='.$this->name.'&tab_module='.$this->tab.'&module_name='.$this->name;
+        $helper->token = Tools::getAdminTokenLite('AdminModules');
+
         $helper->fields_value['GTM_HEAD_CODE'] = Configuration::get('GTM_HEAD_CODE');
         $helper->fields_value['GTM_BODY_CODE'] = Configuration::get('GTM_BODY_CODE');
 
         return $helper->generateForm(array($fields_form));
     }
 
-    public function hookDisplayHeader()
+    public function hookHeader()
     {
-        $this->context->smarty->assign('gtm_head_code', Configuration::get('GTM_HEAD_CODE'));
-        return $this->display(__FILE__, 'views/templates/hook/header.tpl');
+        $gtm_head_code = Configuration::get('GTM_HEAD_CODE');
+        if ($gtm_head_code) {
+            $this->context->smarty->assign('gtm_head_code', $gtm_head_code);
+            return $this->display(__FILE__, 'views/templates/hook/header.tpl');
+        }
     }
 
-    public function hookDisplayFooter()
+    public function hookDisplayAfterBodyOpeningTag()
     {
-        $this->context->smarty->assign('gtm_body_code', Configuration::get('GTM_BODY_CODE'));
-        return $this->display(__FILE__, 'views/templates/hook/footer.tpl');
+        $gtm_body_code = Configuration::get('GTM_BODY_CODE');
+        if ($gtm_body_code) {
+            $this->context->smarty->assign('gtm_body_code', $gtm_body_code);
+            return $this->display(__FILE__, 'views/templates/hook/body.tpl');
+        }
     }
 }
