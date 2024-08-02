@@ -1,6 +1,3 @@
-{if $gtm_id}
-<!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id={$gtm_id}"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
+{if $gtm_body_code}
+{$gtm_body_code|escape:'htmlall':'UTF-8'}
 {/if}
