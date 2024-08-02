@@ -9,8 +9,8 @@ class Gtmintegration extends Module
     {
         $this->name = 'gtmintegration';
         $this->tab = 'analytics_stats';
-        $this->version = '1.0.0';
-        $this->author = 'Your Name';
+        $this->version = '1.2.0';
+        $this->author = 'Jaymian-Lee Reinartz';
         $this->need_instance = 0;
 
         parent::__construct();
@@ -28,7 +28,7 @@ class Gtmintegration extends Module
 
     public function uninstall()
     {
-        return parent::uninstall();
+        return parent::uninstall() && Configuration::deleteByName('GTM_HEAD_CODE') && Configuration::deleteByName('GTM_BODY_CODE');
     }
 
     public function getContent()
