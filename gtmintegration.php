@@ -9,8 +9,8 @@ class Gtmintegration extends Module
     {
         $this->name = 'gtmintegration';
         $this->tab = 'analytics_stats';
-        $this->version = '1.2.0';
-        $this->author = 'Jaymian-Lee Reinartz';
+        $this->version = '1.0.0';
+        $this->author = 'Your Name';
         $this->need_instance = 0;
 
         parent::__construct();
@@ -37,8 +37,8 @@ class Gtmintegration extends Module
         if (Tools::isSubmit('submit'.$this->name)) {
             $gtm_head_code = Tools::getValue('GTM_HEAD_CODE');
             $gtm_body_code = Tools::getValue('GTM_BODY_CODE');
-            Configuration::updateValue('GTM_HEAD_CODE', $gtm_head_code);
-            Configuration::updateValue('GTM_BODY_CODE', $gtm_body_code);
+            Configuration::updateValue('GTM_HEAD_CODE', base64_encode($gtm_head_code));
+            Configuration::updateValue('GTM_BODY_CODE', base64_encode($gtm_body_code));
             $output .= $this->displayConfirmation($this->l('Settings updated'));
         }
 
@@ -59,7 +59,7 @@ class Gtmintegration extends Module
                         'name' => 'GTM_HEAD_CODE',
                         'rows' => 7,
                         'cols' => 40,
-                        'value' => Configuration::get('GTM_HEAD_CODE'),
+                        'value' => base64_decode(Configuration::get('GTM_HEAD_CODE')),
                     ),
                     array(
                         'type' => 'textarea',
@@ -67,7 +67,7 @@ class Gtmintegration extends Module
                         'name' => 'GTM_BODY_CODE',
                         'rows' => 7,
                         'cols' => 40,
-                        'value' => Configuration::get('GTM_BODY_CODE'),
+                        'value' => base64_decode(Configuration::get('GTM_BODY_CODE')),
                     ),
                 ),
                 'submit' => array(
@@ -88,15 +88,15 @@ class Gtmintegration extends Module
             .'&configure='.$this->name.'&tab_module='.$this->tab.'&module_name='.$this->name;
         $helper->token = Tools::getAdminTokenLite('AdminModules');
 
-        $helper->fields_value['GTM_HEAD_CODE'] = Configuration::get('GTM_HEAD_CODE');
-        $helper->fields_value['GTM_BODY_CODE'] = Configuration::get('GTM_BODY_CODE');
+        $helper->fields_value['GTM_HEAD_CODE'] = base64_decode(Configuration::get('GTM_HEAD_CODE'));
+        $helper->fields_value['GTM_BODY_CODE'] = base64_decode(Configuration::get('GTM_BODY_CODE'));
 
         return $helper->generateForm(array($fields_form));
     }
 
     public function hookHeader()
     {
-        $gtm_head_code = Configuration::get('GTM_HEAD_CODE');
+        $gtm_head_code = base64_decode(Configuration::get('GTM_HEAD_CODE'));
         if ($gtm_head_code) {
             $this->context->smarty->assign('gtm_head_code', $gtm_head_code);
             return $this->display(__FILE__, 'views/templates/hook/header.tpl');
@@ -105,7 +105,7 @@ class Gtmintegration extends Module
 
     public function hookDisplayAfterBodyOpeningTag()
     {
-        $gtm_body_code = Configuration::get('GTM_BODY_CODE');
+        $gtm_body_code = base64_decode(Configuration::get('GTM_BODY_CODE'));
         if ($gtm_body_code) {
             $this->context->smarty->assign('gtm_body_code', $gtm_body_code);
             return $this->display(__FILE__, 'views/templates/hook/body.tpl');
