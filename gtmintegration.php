@@ -9,7 +9,7 @@ class Gtmintegration extends Module
     {
         $this->name = 'gtmintegration';
         $this->tab = 'analytics_stats';
-        $this->version = '1.5.0';
+        $this->version = '1.5.1';
         $this->author = 'Jaymian-Lee Reinartz';
         $this->need_instance = 0;
         $this->bootstrap = true;
