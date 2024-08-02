@@ -1,3 +1,5 @@
 {if isset($gtm_head_code)}
-    {$gtm_head_code|escape:'html'}
+    <script type="text/javascript">
+        {$gtm_head_code|escape:'htmlall':'UTF-8'}
+    </script>
 {/if}
