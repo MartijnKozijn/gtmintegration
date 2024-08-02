@@ -12,6 +12,7 @@ class Gtmintegration extends Module
         $this->version = '1.5.0';
         $this->author = 'Jaymian-Lee Reinartz';
         $this->need_instance = 0;
+        $this->bootstrap = true;
 
         parent::__construct();
 
