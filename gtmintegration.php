@@ -9,8 +9,8 @@ class Gtmintegration extends Module
     {
         $this->name = 'gtmintegration';
         $this->tab = 'analytics_stats';
-        $this->version = '1.0.0';
-        $this->author = 'Your Name';
+        $this->version = '1.4.2';
+        $this->author = 'Jaymian-Lee Reinartz';
         $this->need_instance = 0;
 
         parent::__construct();
