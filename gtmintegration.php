@@ -9,7 +9,7 @@ class Gtmintegration extends Module
     {
         $this->name = 'gtmintegration';
         $this->tab = 'analytics_stats';
-        $this->version = '1.4.2';
+        $this->version = '1.5.0';
         $this->author = 'Jaymian-Lee Reinartz';
         $this->need_instance = 0;
 
@@ -19,6 +19,10 @@ class Gtmintegration extends Module
         $this->description = $this->l('Inserts Google Tag Manager code into the header and body of your site.');
 
         $this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_);
+        $this->confirmUninstall = $this->l('Are you sure you want to uninstall?');
+
+        // Assign logo to the module
+        $this->icon = $this->local_path.'logo.png';
     }
 
     public function install()
